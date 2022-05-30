@@ -33,7 +33,7 @@ impl SourceService {
         }
         self.db
             .source
-            .set_by_id(Bson::String(id), doc! {"checked_at": Utc::now().to_owned()})
+            .set_by_id(Bson::String(id), doc! {"checked_at": Utc::now()})
             .await?;
 
         Ok(())

@@ -10,13 +10,14 @@ pub enum ProxyStatus {
     Down,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum ProxyProtocol {
     Socks5,
     Http,
 }
 
+#[serde_with::serde_as]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Proxy {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
@@ -28,8 +29,11 @@ pub struct Proxy {
     pub password: String,
     pub host: String,
     pub port: u16,
+    #[serde_as(as = "bson::DateTime")]
     pub created_at: DateTime<Utc>,
+    #[serde_as(as = "Option<bson::DateTime>")]
     pub checked_at: Option<DateTime<Utc>>,
+    #[serde_as(as = "Option<bson::DateTime>")]
     pub last_ok_at: Option<DateTime<Utc>>,
 }
 
@@ -49,8 +53,21 @@ impl Proxy {
             last_ok_at: None,
         }
     }
+
+    pub fn url(&self) -> String {
+        let protocol = if self.protocol == ProxyProtocol::Socks5 {
+            "socks5"
+        } else {
+            "http"
+        };
+        format!(
+            "{}://{}:{}@{}:{}",
+            protocol, self.username, self.password, self.host, self.port
+        )
+    }
 }
 
+#[serde_with::serde_as]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Source {
     #[serde(rename = "_id")]
@@ -60,7 +77,11 @@ pub struct Source {
     pub username: String,
     pub password: String,
     pub port: u16,
+
+    #[serde_as(as = "bson::DateTime")]
     pub created_at: DateTime<Utc>,
+
+    #[serde_as(as = "Option<bson::DateTime>")]
     pub checked_at: Option<DateTime<Utc>>,
 }
 
