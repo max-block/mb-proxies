@@ -1,5 +1,5 @@
-mod proxy;
-mod source;
+mod proxy_service;
+mod source_service;
 
-pub use proxy::ProxyService;
-pub use source::SourceService;
+pub use proxy_service::ProxyService;
+pub use source_service::SourceService;

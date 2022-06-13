@@ -33,9 +33,7 @@ where
 
     pub async fn find_one(&self, filter: Document, sort: &str) -> MongoResult<Option<T>> {
         let opts = if sort.starts_with('-') {
-            FindOneOptions::builder()
-                .sort(doc! {sort.trim_start_matches('-'): -1})
-                .build()
+            FindOneOptions::builder().sort(doc! {sort.trim_start_matches('-'): -1}).build()
         } else if !sort.is_empty() {
             FindOneOptions::builder().sort(doc! {sort: 1}).build()
         } else {
@@ -46,10 +44,7 @@ where
 
     pub async fn find(&self, filter: Document, sort: &str, limit: i64) -> MongoResult<Vec<T>> {
         let opts = if sort.starts_with('-') {
-            FindOptions::builder()
-                .sort(doc! {sort.trim_start_matches('-'): -1})
-                .limit(limit)
-                .build()
+            FindOptions::builder().sort(doc! {sort.trim_start_matches('-'): -1}).limit(limit).build()
         } else if !sort.is_empty() {
             FindOptions::builder().sort(doc! {sort: 1}).limit(limit).build()
         } else {
@@ -76,9 +71,7 @@ where
     }
 
     pub async fn set_by_id(&self, id: Bson, update: Document) -> MongoResult<UpdateResult> {
-        self.collection
-            .update_one(doc! {"_id": id}, doc! {"$set": update}, None)
-            .await
+        self.collection.update_one(doc! {"_id": id}, doc! {"$set": update}, None).await
     }
 
     pub async fn delete_by_id(&self, id: Bson) -> MongoResult<u64> {

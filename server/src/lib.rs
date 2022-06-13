@@ -1,7 +1,7 @@
-pub mod server;
-mod route;
-pub mod util;
 mod error;
+mod router;
+pub mod server;
+pub mod util;
 
-pub use error::ServerError;
 pub use error::Result;
+pub use error::ServerError;

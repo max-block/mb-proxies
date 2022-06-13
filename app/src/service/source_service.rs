@@ -16,13 +16,8 @@ impl SourceService {
         Self { db }
     }
 
-    pub async fn check(&self, id: String) -> crate::Result<()> {
-        let source = self
-            .db
-            .source
-            .find_by_id(Bson::String(id.clone()))
-            .await?
-            .ok_or(AppError::NotFound)?;
+    pub async fn check(&self, id: String) -> crate::Result<bool> {
+        let source = self.db.source.find_by_id(Bson::String(id.clone())).await?.ok_or(AppError::NotFound)?;
         let res = reqwest::get(&source.url).await?.text().await?;
         let ip4_addresses: Vec<String> = parse_ip4_addresses(&res).into_iter().unique().collect();
 
@@ -31,12 +26,9 @@ impl SourceService {
                 self.db.proxy.insert(&Proxy::new(&source, address)).await?;
             }
         }
-        self.db
-            .source
-            .set_by_id(Bson::String(id), doc! {"checked_at": Utc::now()})
-            .await?;
+        self.db.source.set_by_id(Bson::String(id), doc! {"checked_at": Utc::now()}).await?;
 
-        Ok(())
+        Ok(true)
     }
 }
 

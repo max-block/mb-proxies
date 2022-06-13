@@ -13,10 +13,6 @@ impl App {
         let db = Arc::new(Db::new(database_url).await?);
         let source_service = SourceService::new(db.clone());
         let proxy_service = ProxyService::new(db.clone());
-        Ok(Self {
-            db,
-            source_service,
-            proxy_service,
-        })
+        Ok(Self { db, source_service, proxy_service })
     }
 }

@@ -55,15 +55,8 @@ impl Proxy {
     }
 
     pub fn url(&self) -> String {
-        let protocol = if self.protocol == ProxyProtocol::Socks5 {
-            "socks5"
-        } else {
-            "http"
-        };
-        format!(
-            "{}://{}:{}@{}:{}",
-            protocol, self.username, self.password, self.host, self.port
-        )
+        let protocol = if self.protocol == ProxyProtocol::Socks5 { "socks5" } else { "http" };
+        format!("{}://{}:{}@{}:{}", protocol, self.username, self.password, self.host, self.port)
     }
 }
 
@@ -87,15 +80,6 @@ pub struct Source {
 
 impl Source {
     pub fn new(id: String, url: String, protocol: ProxyProtocol, username: String, password: String, port: u16) -> Self {
-        Self {
-            id,
-            url,
-            protocol,
-            username,
-            password,
-            port,
-            created_at: Utc::now(),
-            checked_at: None,
-        }
+        Self { id, url, protocol, username, password, port, created_at: Utc::now(), checked_at: None }
     }
 }

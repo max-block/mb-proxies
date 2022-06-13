@@ -1,12 +1,12 @@
 use crate::db::Db;
 use crate::{AppError, ProxyStatus};
 use bson::oid::ObjectId;
-use bson::{Bson, doc};
+use bson::{doc, Bson};
+use chrono::Utc;
 use reqwest::{Client, Proxy};
 use serde::Deserialize;
 use std::sync::Arc;
 use std::time::Duration;
-use chrono::Utc;
 
 pub struct ProxyService {
     db: Arc<Db>,
@@ -18,16 +18,8 @@ impl ProxyService {
     }
 
     pub async fn check(&self, id: ObjectId) -> crate::Result<()> {
-        let proxy = self
-            .db
-            .proxy
-            .find_by_id(Bson::ObjectId(id))
-            .await?
-            .ok_or(AppError::NotFound)?;
-        let client = Client::builder()
-            .proxy(Proxy::all(proxy.url())?)
-            .timeout(Duration::from_secs(2))
-            .build()?;
+        let proxy = self.db.proxy.find_by_id(Bson::ObjectId(id)).await?.ok_or(AppError::NotFound)?;
+        let client = Client::builder().proxy(Proxy::all(proxy.url())?).timeout(Duration::from_secs(2)).build()?;
 
         let mut status = ProxyStatus::Down;
         if let Ok(res) = client.get("https://httpbin.org/ip").send().await {

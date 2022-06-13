@@ -16,10 +16,7 @@ pub struct Db {
 impl Db {
     pub async fn new(database_url: &str) -> crate::Result<Self> {
         let client = Client::with_uri_str(database_url).await?;
-        let database_name = ClientOptions::parse(database_url)
-            .await?
-            .default_database
-            .ok_or(AppError::EmptyDatabase)?;
+        let database_name = ClientOptions::parse(database_url).await?.default_database.ok_or(AppError::EmptyDatabase)?;
         let database = client.database(&database_name);
 
         Ok(Self {
